@@ -1,0 +1,4 @@
+- Criaçao dos projetos
+dotnet new web -n ProAgil.Web
+dotnet new mvc -n ProAgil.MVC
+dotnet new webapi -n ProAgil.API
