@@ -1,3 +1,11 @@
 <p>
-  eventos works!
+    eventos works!
 </p>
+
+<div *ngFor="let item of evento">
+    Este é o evento {{item.Tema}}
+    <br> Local - {{item.Local}}
+</div>
+<!-- {{evento[0].Tema}} - {{evento[1].Tema}} -->
+
+<p>{{evento.Tema}}</p>
