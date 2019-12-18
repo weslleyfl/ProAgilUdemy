@@ -12,11 +12,12 @@ export class EventosComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
+    this.GetEventos();
   }
 
-public GetEventos(){
-   this.http.get('http://localhost:5000/api/values').subscribe( response => {
-    this.evento = response;
+public GetEventos() {
+   this.http.get('http://localhost:5000/api/values').subscribe( (response) => {
+       this.evento = response;
     }, error => {
       console.log(error);
     });

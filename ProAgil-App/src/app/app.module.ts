@@ -14,7 +14,7 @@ import { EventosComponent } from './eventos/eventos.component';
    imports: [
       BrowserModule,
       AppRoutingModule,
-      HttpClientModule    
+      HttpClientModule
    ],
    providers: [],
    bootstrap: [
