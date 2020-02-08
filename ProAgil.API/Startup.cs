@@ -47,6 +47,7 @@ namespace ProAgil.API {
                 .AllowAnyMethod ()
                 .AllowAnyHeader ());
             // app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseMvc ();
         }
     }
