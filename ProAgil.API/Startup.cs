@@ -30,6 +30,8 @@ namespace ProAgil.API {
 
             services.AddCors();
 
+            services.AddScoped<IProAgilRepository, ProAgilRepository>();
+
             services.AddMvc().SetCompatibilityVersion (CompatibilityVersion.Version_2_2);
         }
 
