@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { EventoService } from './../_services/evento.service';
+
 
 @Component({
   selector: 'app-eventos',
@@ -9,14 +10,6 @@ import { HttpClient } from '@angular/common/http';
 export class EventosComponent implements OnInit {
 
   private _filtroLista: string;
-  get filtroLista() {
-    return this._filtroLista;
-  }
-  set filtroLista(value: string){
-    this._filtroLista = value;
-    this.eventosFiltrados = this.filtroLista ? this.filtrarEventos(this.filtroLista) : this.eventos;
-  }
-
   eventosFiltrados: any = [];
   eventos: any = [];
   imagemLargura = 50;
@@ -24,18 +17,30 @@ export class EventosComponent implements OnInit {
   mostrarImagem = false;
 
 
-  constructor(private http: HttpClient) { }
+  constructor(private eventoService: EventoService) { }
 
   ngOnInit() {
     this.GetEventos();
   }
 
+  get filtroLista() {
+    return this._filtroLista;
+  }
+  set filtroLista(value: string) {
+    this._filtroLista = value;
+    this.eventosFiltrados = this.filtroLista ? this.filtrarEventos(this.filtroLista) : this.eventos;
+  }
+
+
   filtrarEventos(filtrarPor: string): any {
     filtrarPor = filtrarPor.toLocaleLowerCase();
 
-    return this.eventos.filter(
-        evento => evento.tema.toLocaleLowerCase().indexOf(filtrarPor) !== -1
-    );
+    return this.eventos.filter(evento => {
+      return evento.tema.toLocaleLowerCase().includes(filtrarPor)
+    });
+    // return this.eventos.filter(
+    //     evento => evento.tema.toLocaleLowerCase().indexOf(filtrarPor) !== -1
+    // );
   }
 
 
@@ -43,13 +48,24 @@ export class EventosComponent implements OnInit {
     this.mostrarImagem = !this.mostrarImagem;
   }
 
-public GetEventos() {
-   this.http.get('http://localhost:5000/api/values').subscribe( (response) => {
-       this.eventos = response;
+
+  public GetEventos() {
+    this.eventoService.getEvento().subscribe((response) => {
+      this.eventos = response;
+      this.eventosFiltrados = this.eventos;
     }, error => {
       console.log(error);
     });
 
-}
+  }
+
+  // public GetEventos() {
+  //    this.http.get('http://localhost:5000/api/values').subscribe( (response) => {
+  //        this.eventos = response;
+  //     }, error => {
+  //       console.log(error);
+  //     });
+
+  // }
 
 }

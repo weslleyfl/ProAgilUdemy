@@ -67,7 +67,7 @@ namespace ProAgil.Repository
                     .ThenInclude(p => p.Palestrante);
             }
 
-            query = query.AsNoTracking ()
+            query = query.AsNoTracking()
                 .Where(e => e.Tema.ToLower().Contains(tema.ToLower()))
                 .OrderByDescending(c => c.DataEvento);
                 
@@ -127,7 +127,7 @@ namespace ProAgil.Repository
                     .ThenInclude (e => e.Evento);
             }
 
-            query = query.AsNoTracking ()
+            query = query.AsNoTracking()
                 .Where (p => p.Nome.ToLower().Contains(name.ToLower()));
 
             return await query.ToArrayAsync ();
