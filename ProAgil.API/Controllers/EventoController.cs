@@ -45,6 +45,7 @@ namespace ProAgil.API.Controllers
             
         }
 
+        // GET api/Evento/1
         [HttpGet("{EventoId}")]
         public async Task<IActionResult> Get(int EventoId)
         {
@@ -107,9 +108,9 @@ namespace ProAgil.API.Controllers
         {
             try
             {
-                var evento = await _repo.GetEventoAsyncById(EventoId, false);
-                if (evento == null) return NotFound();
-
+                // var evento = await _repo.GetEventoAsyncById(EventoId, false);
+                // if (evento == null) return NotFound();
+                
                 // var idLotes = new List<int>();
                 // var idRedesSociais = new List<int>();
 
@@ -129,6 +130,7 @@ namespace ProAgil.API.Controllers
 
                 // _mapper.Map(model, evento);
 
+                var evento = model;
                 _repo.Update(evento);
 
                 if (await _repo.SaveChangesAsync())
