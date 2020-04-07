@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-// using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProAgil.API.Dtos;
@@ -19,15 +19,17 @@ namespace ProAgil.API.Controllers
     public class EventoController : ControllerBase
     {
         private readonly IProAgilRepository _repo;
-       
+        private readonly IMapper _mapper;
 
-        public EventoController(IProAgilRepository repo)
-        {           
+
+        public EventoController(IProAgilRepository repo, IMapper mapper)
+        {
             _repo = repo;
+            _mapper = mapper;
         }
 
 
-       // GET api/Evento
+        // GET api/Evento
         [HttpGet]
         public async Task<IActionResult> Get() 
         {
@@ -35,7 +37,9 @@ namespace ProAgil.API.Controllers
             try
             {
                 var eventos = await _repo.GetAllEventoAsync(true);
-                return Ok (eventos);
+                var results = _mapper.Map<EventoDto[]>(eventos);
+
+                return Ok (results);
             }
             catch (System.Exception e)
             {
@@ -53,13 +57,13 @@ namespace ProAgil.API.Controllers
             {
                 var evento = await _repo.GetEventoAsyncById(EventoId, true);
 
-                // var results = _mapper.Map<EventoDto>(evento);
+                var results = _mapper.Map<EventoDto>(evento);
 
-                return Ok(evento);
+                return Ok(results);
             }
             catch (System.Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco Dados Falhou");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
         }
 
@@ -70,28 +74,28 @@ namespace ProAgil.API.Controllers
             {
                 var eventos = await _repo.GetAllEventoAsyncByTema(tema, true);
 
-                // var results = _mapper.Map<EventoDto[]>(eventos);
+                var results = _mapper.Map<EventoDto[]>(eventos);
 
-                return Ok(eventos);
+                return Ok(results);
             }
             catch (System.Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco Dados Falhou");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco de Dados Falhou");
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Evento model)
+        public async Task<IActionResult> Post(EventoDto model)
         {
             try
             {
-                var evento = model; //_mapper.Map<Evento>(model);
+                var evento = _mapper.Map<Evento>(model);
 
                 _repo.Add(evento);
 
                 if (await _repo.SaveChangesAsync())
                 {
-                    return Created($"/api/evento/{model.Id}", model); //_mapper.Map<EventoDto>(evento));
+                    return Created($"/api/evento/{model.Id}", _mapper.Map<EventoDto>(evento));
                 }
             }
             catch (System.Exception ex)
@@ -104,38 +108,38 @@ namespace ProAgil.API.Controllers
         }
 
         [HttpPut("{EventoId}")]
-        public async Task<IActionResult> Put(int EventoId, Evento model)
+        public async Task<IActionResult> Put(int EventoId, EventoDto model)
         {
             try
             {
-                // var evento = await _repo.GetEventoAsyncById(EventoId, false);
-                // if (evento == null) return NotFound();
+                var evento = await _repo.GetEventoAsyncById(EventoId, false);
+                if (evento == null) return NotFound();
                 
-                // var idLotes = new List<int>();
-                // var idRedesSociais = new List<int>();
+                var idLotes = new List<int>();
+                var idRedesSociais = new List<int>();
 
-                // model.Lotes.ForEach(item => idLotes.Add(item.Id));
-                // model.RedesSociais.ForEach(item => idRedesSociais.Add(item.Id));
+                model.Lotes.ForEach(item => idLotes.Add(item.Id));
+                model.RedesSociais.ForEach(item => idRedesSociais.Add(item.Id));
 
-                // var lotes = evento.Lotes.Where(
-                //     lote => !idLotes.Contains(lote.Id)
-                // ).ToArray();
+                var lotes = evento.Lotes.Where(
+                    lote => !idLotes.Contains(lote.Id)
+                ).ToArray();
 
-                // var redesSociais = evento.RedesSociais.Where(
-                //     rede => !idLotes.Contains(rede.Id)
-                // ).ToArray();
+                var redesSociais = evento.RedesSociais.Where(
+                    rede => !idLotes.Contains(rede.Id)
+                ).ToArray();
 
-                // if (lotes.Length > 0) _repo.DeleteRange(lotes);
-                // if (redesSociais.Length > 0) _repo.DeleteRange(redesSociais);
+                if (lotes.Length > 0) _repo.DeleteRange(lotes);
+                if (redesSociais.Length > 0) _repo.DeleteRange(redesSociais);
 
-                // _mapper.Map(model, evento);
+                _mapper.Map(model, evento);
 
-                var evento = model;
+                // var evento = model;
                 _repo.Update(evento);
 
                 if (await _repo.SaveChangesAsync())
                 {
-                    return Created($"/api/evento/{model.Id}", model); // _mapper.Map<EventoDto>(evento));
+                     return Created($"/api/evento/{model.Id}", _mapper.Map<EventoDto>(evento));
                 }
             }
             catch (System.Exception ex)
