@@ -1,3 +1,4 @@
+<app-titulo [titulo]="titulo"></app-titulo>
 <div class="d-flex">
     <div class="form-inline mr-auto" action="">
         <div class="form-group mb-2">
@@ -38,7 +39,7 @@
             <td>{{ evento.id }} </td>
             <td>{{ evento.tema }}</td>
             <td>{{ evento.local }} </td>
-            <td>{{ evento.dataEvento | dateTimeFormat }}</td>
+            <td>{{ evento.dataEvento | DateTimeFormatPipe }}</td>
             <td>{{ evento.qtdPessoas }}</td>
             <td>
                 <div *ngIf="!(evento.lotes.length)">
@@ -110,7 +111,8 @@
                         </div>
                         <div class="form-group col-md-4">
                             <label>Data e Hora</label>
-                            <input type="text" class="form-control" [ngClass]="{'is-invalid': registerForm.get('dataEvento').errors && registerForm.get('dataEvento').touched}" formControlName="dataEvento" placeholder="Data e Hora" bsDatepicker [bsConfig]="{ dateInputFormat : 'DD/MM/YYYY hh:mm' }">
+                            <input type="text" class="form-control" bsDatepicker value="{{dataEvento | DateTimeFormatPipe}}" [(ngModel)]="dataEvento" [bsConfig]="{ dateInputFormat : 'DD/MM/YYYY hh:mm' }" [ngClass]="{'is-invalid': registerForm.get('dataEvento').errors && registerForm.get('dataEvento').touched}"
+                                formControlName="dataEvento" placeholder="Data e Hora">
                             <div *ngIf="registerForm.get('dataEvento').hasError('required') && registerForm.get('dataEvento').touched" class="invalid-feedback">
                                 Data e hora é obrigatório.
                             </div>
