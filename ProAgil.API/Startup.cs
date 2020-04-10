@@ -1,30 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ProAgil.Domain;
 using ProAgil.Repository;
 
-namespace ProAgil.API {
-    public class Startup {
-        public Startup (IConfiguration configuration) {
+namespace ProAgil.API 
+{
+    public class Startup 
+    {
+        public Startup (IConfiguration configuration) 
+        {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices (IServiceCollection services) {
+        public void ConfigureServices (IServiceCollection services) 
+        {
 
             services.AddDbContext<ProAgilContext> (options =>
                 options.UseSqlite (Configuration.GetConnectionString ("DefaultConnection")));
@@ -33,14 +42,27 @@ namespace ProAgil.API {
 
             services.AddAutoMapper ();
 
-            services.AddMvc ().SetCompatibilityVersion (CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion (CompatibilityVersion.Version_2_2);
             services.AddCors ();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure (IApplicationBuilder app, IHostingEnvironment env) {
+        public void Configure (IApplicationBuilder app, IHostingEnvironment env) 
+        {
 
-            if (env.IsDevelopment ()) {
+            // Definindo a cultura padrão: pt-BR
+            var supportedCultures = new[] { new CultureInfo("pt-BR") };
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(culture: "pt-BR", uiCulture: "pt-BR"),
+                // Formatting numbers, dates, etc.
+                SupportedCultures = supportedCultures,
+                // UI strings that we have localized.
+                SupportedUICultures = supportedCultures
+            });
+
+            if (env.IsDevelopment ()) 
+            {
                 app.UseDeveloperExceptionPage ();
             } else {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -52,7 +74,15 @@ namespace ProAgil.API {
                 .AllowAnyMethod ()
                 .AllowAnyHeader ());
             // app.UseHttpsRedirection();
-            app.UseStaticFiles ();
+
+            app.UseStaticFiles (); // For the wwwroot folder
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+                RequestPath = new PathString("/Resources")
+            });
+            
             app.UseMvc ();
         }
     }

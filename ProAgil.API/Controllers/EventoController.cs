@@ -112,25 +112,34 @@ namespace ProAgil.API.Controllers
         {
             try
             {
+
                 var evento = await _repo.GetEventoAsyncById(EventoId, false);
                 if (evento == null) return NotFound();
                 
                 var idLotes = new List<int>();
                 var idRedesSociais = new List<int>();
 
-                model.Lotes.ForEach(item => idLotes.Add(item.Id));
-                model.RedesSociais.ForEach(item => idRedesSociais.Add(item.Id));
+                if(model.Lotes != null)
+                {
+                    model.Lotes.ForEach(item => idLotes.Add(item.Id));     
 
-                var lotes = evento.Lotes.Where(
-                    lote => !idLotes.Contains(lote.Id)
-                ).ToArray();
+                    var lotes = evento.Lotes.Where(
+                        lote => !idLotes.Contains(lote.Id)
+                    ).ToArray();
 
-                var redesSociais = evento.RedesSociais.Where(
-                    rede => !idLotes.Contains(rede.Id)
-                ).ToArray();
+                    if (lotes?.Length > 0) _repo.DeleteRange(lotes);
+                }
 
-                if (lotes.Length > 0) _repo.DeleteRange(lotes);
-                if (redesSociais.Length > 0) _repo.DeleteRange(redesSociais);
+                if(model.RedesSociais != null)
+                {
+                    model.RedesSociais.ForEach(item => idRedesSociais.Add(item.Id));
+
+                    var redesSociais = evento.RedesSociais.Where(
+                        rede => !idLotes.Contains(rede.Id)
+                    ).ToArray();
+
+                    if (redesSociais?.Length > 0) _repo.DeleteRange(redesSociais);
+                }                            
 
                 _mapper.Map(model, evento);
 
@@ -171,6 +180,37 @@ namespace ProAgil.API.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload()
+        {
+            try
+            {
+                var file = Request.Form.Files[0];
+                var folderName = Path.Combine("Resources", "Images");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                if (file.Length > 0)
+                {
+                    var filename = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName;
+                    var fullPath = Path.Combine(pathToSave, filename.Replace("\"", " ").Trim());
+
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+                }
+
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
+                //return this.StatusCode(StatusCodes.Status500InternalServerError, $"Banco Dados Falhou {ex.Message}");
+                return BadRequest($"Erro ao tentar realizar upload : {ex.Message}");
+            }
+
+            
         }
 
     }

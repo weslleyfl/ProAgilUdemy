@@ -1,6 +1,6 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
-import { FormGroup, Validators, FormBuilder, FormControl } from '@angular/forms';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { BsModalService } from 'ngx-bootstrap';
 import { defineLocale, BsLocaleService, ptBrLocale } from 'ngx-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 
@@ -30,7 +30,10 @@ export class EventosComponent implements OnInit {
   dataEvento: string;
   dataAtual: string;
   registerForm: FormGroup;
- 
+
+  file: File;
+  fileNameToUpdate: string;
+
   constructor(
     private eventoService: EventoService
     , private modalService: BsModalService
@@ -98,7 +101,7 @@ export class EventosComponent implements OnInit {
         // pego os valors do formulario
         this.evento = Object.assign({}, this.registerForm.value);
 
-        // this.uploadImagem();
+        this.uploadImagem();
 
         this.eventoService.postEvento(this.evento).subscribe(
           (novoEvento: Evento) => {
@@ -115,7 +118,7 @@ export class EventosComponent implements OnInit {
         // pego os valors do formulario
         this.evento = Object.assign({ id: this.evento.id }, this.registerForm.value);
 
-        // this.uploadImagem();
+        this.uploadImagem();
         // console.log('Editar ', this.registerForm.value);
         // console.log('Evento ', this.evento);
 
@@ -135,8 +138,10 @@ export class EventosComponent implements OnInit {
   editarEvento(evento: Evento, template: any) {
     this.modoSalvar = 'put';
     this.openModal(template);
-    this.evento = evento;
-    this.registerForm.patchValue(evento);
+    this.evento = Object.assign({}, evento);
+    this.fileNameToUpdate = evento.imagemURL.toString();
+    this.evento.imagemURL = '';
+    this.registerForm.patchValue(this.evento);
 
   }
 
@@ -184,6 +189,40 @@ export class EventosComponent implements OnInit {
       console.log(error);
     });
 
+  }
+
+  onFileChange(event) {
+    const reader = new FileReader();
+
+    if (event.target.files && event.target.files.length) {
+      this.file = event.target.files;
+      console.log(this.file);
+    }
+  }
+
+  uploadImagem() {
+
+    if (this.modoSalvar === 'post') {
+      const nomeArquivo = this.evento.imagemURL.split('\\', 3);
+      this.evento.imagemURL = nomeArquivo[2];
+
+      this.eventoService.postUpload(this.file, nomeArquivo[2])
+        .subscribe(
+          () => {
+            this.dataAtual = new Date().getMilliseconds().toString();
+            this.getEventos();
+          }
+        );
+    } else {
+      this.evento.imagemURL = this.fileNameToUpdate;
+      this.eventoService.postUpload(this.file, this.fileNameToUpdate)
+        .subscribe(
+          () => {
+            this.dataAtual = new Date().getMilliseconds().toString();
+            this.getEventos();
+          }
+        );
+    }
   }
 
 
