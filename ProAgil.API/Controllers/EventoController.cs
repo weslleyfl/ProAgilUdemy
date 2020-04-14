@@ -97,14 +97,15 @@ namespace ProAgil.API.Controllers
                 {
                     return Created($"/api/evento/{model.Id}", _mapper.Map<EventoDto>(evento));
                 }
+
+                return BadRequest();
             }
             catch (System.Exception ex)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError,
                     $"Banco Dados Falhou {ex.Message}");
             }
-
-            return BadRequest();
+            
         }
 
         [HttpPut("{EventoId}")]
@@ -150,13 +151,15 @@ namespace ProAgil.API.Controllers
                 {
                      return Created($"/api/evento/{model.Id}", _mapper.Map<EventoDto>(evento));
                 }
+
+                return BadRequest();
             }
             catch (System.Exception ex)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco Dados Falhou " + ex.Message);
             }
 
-            return BadRequest();
+            
         }
 
         [HttpDelete("{EventoId}")]
@@ -173,13 +176,15 @@ namespace ProAgil.API.Controllers
                 {
                     return Ok();
                 }
+                
+                return BadRequest();
             }
             catch (System.Exception)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco Dados Falhou");
             }
 
-            return BadRequest();
+            
         }
 
         [HttpPost("upload")]
