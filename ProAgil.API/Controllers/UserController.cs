@@ -38,7 +38,7 @@
           }
 
           [HttpGet("GetUser")]
-          //   [AllowAnonymous]
+          [AllowAnonymous]
           //   public async Task<IActionResult> GetUser(UserDto userDto)
           public IActionResult GetUser()
           {
