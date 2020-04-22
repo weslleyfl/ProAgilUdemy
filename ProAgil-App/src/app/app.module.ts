@@ -2,10 +2,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ModalModule, BsDropdownModule, TooltipModule, BsDatepickerModule } from 'ngx-bootstrap';
+import { ModalModule, BsDropdownModule, TooltipModule, BsDatepickerModule, TabsModule } from 'ngx-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { ToastrModule } from 'ngx-toastr';
+import { NgxMaskModule, IConfig } from 'ngx-mask';
+import { NgxCurrencyModule } from 'ngx-currency';
 
 import { EventoService } from './_services/evento.service';
 
@@ -23,6 +25,7 @@ import { RegistrationComponent } from './user/registration/registration.componen
 import { LoginComponent } from './user/login/login.component';
 import { AuthService } from './_services/auth.service';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { EventoEditComponent } from './eventos/evento-edit/evento-edit.component';
 
 
 @NgModule({
@@ -37,7 +40,8 @@ import { AuthInterceptor } from './auth/auth.interceptor';
       TituloComponent,
       UserComponent,
       RegistrationComponent,
-      LoginComponent
+      LoginComponent,
+      EventoEditComponent
    ],
    imports: [
       BrowserModule,
@@ -54,7 +58,10 @@ import { AuthInterceptor } from './auth/auth.interceptor';
          timeOut: 3000,
          preventDuplicates: true,
          progressBar: true
-      })
+      }),
+      TabsModule.forRoot(),
+      NgxMaskModule.forRoot(),
+      NgxCurrencyModule
    ],
    providers: [
       EventoService,
