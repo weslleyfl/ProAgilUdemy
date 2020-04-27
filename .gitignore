@@ -9,7 +9,7 @@ obj
 .DS_Store
 
 # compiled output
-/dist
+dist
 /tmp
 /out-tsc
 
